@@ -22,30 +22,10 @@ namespace WebApplication1
             _db_connect_str = new SqlConnectionStringBuilder(
                 "Data Source=a1040.centralite.com;Initial Catalog=PowerCalibration;Integrated Security=True");
 
-            if(!IsPostBack)
+            if (!IsPostBack)
+            {
                 updateGrpahBydate(DateTime.MinValue, DateTime.MaxValue);
-        }
-
-        protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string cmd = "SELECT * FROM [Results]";
-            if (DropDownList1.SelectedValue != "0")
-                cmd += string.Format(" WHERE [machine_id] = {0}", DropDownList1.SelectedValue);
-        }
-
-        protected void DropDownList1_DataBinding(object sender, EventArgs e)
-        {
-        }
-
-        protected void DropDownList1_DataBound(object sender, EventArgs e)
-        {
-            DropDownList1.Items.Add(new ListItem("All", "0"));
-
-        }
-
-        protected void Chart1_DataBinding(object sender, EventArgs e)
-        {
-
+            }
         }
 
 
@@ -153,6 +133,9 @@ namespace WebApplication1
             //GridView1.DataBind();
             //return;
 
+            //CheckBoxListMachines.DataMember = "name";
+            //CheckBoxListMachines.DataSource = table_machies_db;
+            //CheckBoxListMachines.DataBind();
 
             var q = from r in table_results_db.AsEnumerable() 
                     join m in table_machies_db.AsEnumerable() on r.Field<int>("machine_id") equals m.Field<int>("id")

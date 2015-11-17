@@ -17,40 +17,40 @@
 
             <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
-                    <asp:DropDownList ID="DropDownList1" runat="server" AutoPostBack="True" DataSourceID="SqlDataSource2" DataTextField="name" DataValueField="id" OnDataBinding="DropDownList1_DataBinding" OnDataBound="DropDownList1_DataBound" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
-                    </asp:DropDownList>
-                    <asp:SqlDataSource ID="SqlDataSource2" runat="server" ConnectionString="<%$ ConnectionStrings:PowerCalibrationConnectionString %>" SelectCommand="SELECT * FROM [Machines]"></asp:SqlDataSource>
-                    <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Button" />
-                    <div>
-                        <asp:Chart ID="Chart1" runat="server" Height="560px" Width="982px">
-                            <Series>
-                                <asp:Series ChartType="Line" Legend="Legend1" Name="SeriesName" XValueType="Time" YValueType="Double">
-                                    <Points>
-                                        <asp:DataPoint XValue="23327.25" YValues="0.9" />
-                                        <asp:DataPoint XValue="23327.270833333332" YValues="0.8" />
-                                        <asp:DataPoint XValue="23327.291666666668" YValues="0.95" />
-                                    </Points>
-                                </asp:Series>
-                            </Series>
-                            <MapAreas>
-                                <asp:MapArea Coordinates="0,0,0,0" />
-                            </MapAreas>
-                            <ChartAreas>
-                                <asp:ChartArea BorderDashStyle="Solid" BorderWidth="2" Name="ChartArea1">
-                                    <AxisX>
-                                        <ScaleView SizeType="Hours" />
-                                    </AxisX>
-                                </asp:ChartArea>
-                            </ChartAreas>
-                            <Legends>
-                                <asp:Legend Name="Legend1">
-                                </asp:Legend>
-                            </Legends>
-                        </asp:Chart>
-                    </div>
+                    <asp:CheckBoxList ID="CheckBoxListMachines" runat="server">
+                        <asp:ListItem>Machine1</asp:ListItem>
+                        <asp:ListItem>Machne2</asp:ListItem>
+                    </asp:CheckBoxList>
                     <asp:TextBox ID="txtDateTimeStart" runat="server" Width="160px" TextMode="DateTime">2015-11-16 00:00:00</asp:TextBox> To 
                     <asp:TextBox ID="txtDateTimeEnd" runat="server" Width="160px" TextMode="DateTime">2015-11-17 00:00:00</asp:TextBox>
                     <asp:Button ID="ButtonGo" runat="server" OnClick="ButtonGo_Click" Text="Go" />
+                    <div>
+                    <asp:Chart ID="Chart1" runat="server" Height="560px" Width="982px">
+                        <Series>
+                            <asp:Series ChartType="Line" Legend="Legend1" Name="SeriesName" XValueType="Time" YValueType="Double">
+                                <Points>
+                                    <asp:DataPoint XValue="23327.25" YValues="0.9" />
+                                    <asp:DataPoint XValue="23327.270833333332" YValues="0.8" />
+                                    <asp:DataPoint XValue="23327.291666666668" YValues="0.95" />
+                                </Points>
+                            </asp:Series>
+                        </Series>
+                        <MapAreas>
+                            <asp:MapArea Coordinates="0,0,0,0" />
+                        </MapAreas>
+                        <ChartAreas>
+                            <asp:ChartArea BorderDashStyle="Solid" BorderWidth="2" Name="ChartArea1">
+                                <AxisX>
+                                    <ScaleView SizeType="Hours" />
+                                </AxisX>
+                            </asp:ChartArea>
+                        </ChartAreas>
+                        <Legends>
+                            <asp:Legend Name="Legend1">
+                            </asp:Legend>
+                        </Legends>
+                    </asp:Chart>
+                    </div>
                 </ContentTemplate>
             </asp:UpdatePanel>
 
