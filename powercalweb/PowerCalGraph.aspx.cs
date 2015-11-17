@@ -97,9 +97,9 @@ namespace WebApplication1
         }
 
         void updateGrpahBydate(DateTime start){
-        
-            DataTable table_db = new DataTable();
-            //string "select * from Results where machine_id=10 and timestamp >= '2015/11/12' order by timestamp"
+
+            DataTable table_results_db = new DataTable();
+            DataTable table_machies_db = new DataTable();
             using (SqlConnection con = new SqlConnection(_db_connect_str.ConnectionString))
             {
                 con.Open();
@@ -107,36 +107,51 @@ namespace WebApplication1
                 SqlCommand cmd;
                 if (start == DateTime.MaxValue)
                 {
-                    cmd = new SqlCommand("select top 1 timestamp from Results where (machine_id=10 or machine_id=9)  order by timestamp desc", con);
+                    cmd = new SqlCommand("select top 1 timestamp from Results order by timestamp desc", con);
                     start = (DateTime)cmd.ExecuteScalar();
                     string selectstr = string.Format(
-                        "select * from Results where machine_id=10 and timestamp >= '{0}' order by timestamp", start.Date.ToShortDateString());
+                        "select * from Results where timestamp >= '{0}' order by timestamp", start.Date.ToShortDateString());
                     cmd = new SqlCommand(selectstr, con);
                 }
                 else
                 {
                     string selectstr = string.Format(
-                        "select * from Results where machine_id=10 and timestamp >= '{0}' order by timestamp", start.ToString());
+                        "select * from Results where timestamp >= '{0}' order by timestamp", start.ToString());
                     cmd = new SqlCommand(selectstr, con);
 
                 }
 
                 using (SqlDataAdapter adp = new SqlDataAdapter(cmd))
-                    adp.Fill(table_db);
+                    adp.Fill(table_results_db);
+
+                cmd = new SqlCommand("select * from Machines", con);
+                using (SqlDataAdapter adp = new SqlDataAdapter(cmd))
+                    adp.Fill(table_machies_db);
             }
+
+            var q = from r in table_results_db.AsEnumerable() 
+                    join m in table_machies_db.AsEnumerable() on r.Field<int>("machine_id") equals m.Field<int>("id")
+                    select new 
+                    {
+                        timestamp = r.Field<DateTime>("timestamp"),
+                        voltage_gain = r.Field<Int32>("voltage_gain"),
+                        current_gain = r.Field<Int32>("current_gain"),
+                        machine = m.Field<string>("name")
+                    };
+
 
             DataTable table_graph = new DataTable();
             table_graph.Columns.Add("timestamp", typeof(DateTime));
             table_graph.Columns.Add("voltage_gain", typeof(double));
             table_graph.Columns.Add("current_gain", typeof(double));
-            foreach (DataRow rowd in table_db.Rows)
+            foreach (var r in q)
             {
                 DataRow rowg = table_graph.NewRow();
 
-                rowg["timestamp"] = rowd["timestamp"];
+                rowg["timestamp"] = r.timestamp;
 
-                double voltage_gain = Convert.ToDouble(rowd["voltage_gain"]) / 0x400000;
-                double current_gain = Convert.ToDouble(rowd["current_gain"]) / 0x400000;
+                double voltage_gain = Convert.ToDouble(r.voltage_gain) / 0x400000;
+                double current_gain = Convert.ToDouble(r.current_gain) / 0x400000;
 
                 rowg["voltage_gain"] = voltage_gain;
                 rowg["current_gain"] = current_gain;
@@ -174,7 +189,8 @@ namespace WebApplication1
             Chart1.Legends.Add("Lengend");
             
             
-            GridView1.DataSource = table_graph;
+            //GridView1.DataSource = table_graph;
+            GridView1.DataSource = q;
             GridView1.DataBind();
         
         }
