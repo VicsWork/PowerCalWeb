@@ -48,7 +48,8 @@
                             </Legends>
                         </asp:Chart>
                     </div>
-                    <asp:TextBox ID="txtDateTime" runat="server" Width="120px">2015-11-16 12:00:00</asp:TextBox>
+                    <asp:TextBox ID="txtDateTimeStart" runat="server" Width="160px" TextMode="DateTime">2015-11-16 00:00:00</asp:TextBox> To 
+                    <asp:TextBox ID="txtDateTimeEnd" runat="server" Width="160px" TextMode="DateTime">2015-11-17 00:00:00</asp:TextBox>
                     <asp:Button ID="ButtonGo" runat="server" OnClick="ButtonGo_Click" Text="Go" />
                 </ContentTemplate>
             </asp:UpdatePanel>

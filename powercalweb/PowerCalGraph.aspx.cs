@@ -23,7 +23,7 @@ namespace WebApplication1
                 "Data Source=a1040.centralite.com;Initial Catalog=PowerCalibration;Integrated Security=True");
 
             if(!IsPostBack)
-                updateGrpahBydate(DateTime.MaxValue);
+                updateGrpahBydate(DateTime.MinValue, DateTime.MaxValue);
         }
 
         protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e)
@@ -91,12 +91,13 @@ namespace WebApplication1
 
         protected void ButtonGo_Click(object sender, EventArgs e)
         {
-            DateTime date = DateTime.Parse(txtDateTime.Text);
-            updateGrpahBydate(date);
+            DateTime date_start = DateTime.Parse(txtDateTimeStart.Text);
+            DateTime date_end = DateTime.Parse(txtDateTimeEnd.Text);
+            updateGrpahBydate(date_start, date_end);
 
         }
 
-        void updateGrpahBydate(DateTime start){
+        void updateGrpahBydate(DateTime start, DateTime end){
 
             DataTable table_results_db = new DataTable();
             DataTable table_machies_db = new DataTable();
@@ -104,22 +105,41 @@ namespace WebApplication1
             {
                 con.Open();
 
+                string date_start_str, date_end_str;
+
                 SqlCommand cmd;
-                if (start == DateTime.MaxValue)
+                if (start == DateTime.MinValue)
                 {
-                    cmd = new SqlCommand("select top 1 timestamp from Results order by timestamp desc", con);
-                    start = (DateTime)cmd.ExecuteScalar();
-                    string selectstr = string.Format(
-                        "select * from Results where timestamp >= '{0}' order by timestamp", start.Date.ToShortDateString());
-                    cmd = new SqlCommand(selectstr, con);
+
+                    cmd = new SqlCommand("select top 1 timestamp from Results order by timestamp asc", con);
+                    date_start_str = cmd.ExecuteScalar().ToString();
+
                 }
                 else
                 {
-                    string selectstr = string.Format(
-                        "select * from Results where timestamp >= '{0}' order by timestamp", start.ToString());
-                    cmd = new SqlCommand(selectstr, con);
+                    date_start_str = start.ToString();
+                }
+                if (end == DateTime.MaxValue)
+                {
+
+                    cmd = new SqlCommand("select top 1 timestamp from Results order by timestamp desc", con);
+                    date_end_str = cmd.ExecuteScalar().ToString();
 
                 }
+                else
+                {
+                    date_end_str = end.ToString();
+                }
+
+                if (!IsPostBack)
+                {
+                    this.txtDateTimeStart.Text = date_start_str;
+                    this.txtDateTimeEnd.Text = date_end_str;
+                }
+
+                string selectstr = string.Format(
+                    "select * from Results where (timestamp >= '{0}' and timestamp < '{1}') order by timestamp", date_start_str, date_end_str);
+                cmd = new SqlCommand(selectstr, con);
 
                 using (SqlDataAdapter adp = new SqlDataAdapter(cmd))
                     adp.Fill(table_results_db);
@@ -128,6 +148,11 @@ namespace WebApplication1
                 using (SqlDataAdapter adp = new SqlDataAdapter(cmd))
                     adp.Fill(table_machies_db);
             }
+
+            //GridView1.DataSource = table_results_db;
+            //GridView1.DataBind();
+            //return;
+
 
             var q = from r in table_results_db.AsEnumerable() 
                     join m in table_machies_db.AsEnumerable() on r.Field<int>("machine_id") equals m.Field<int>("id")
@@ -187,12 +212,19 @@ namespace WebApplication1
 
 
             Chart1.Legends.Add("Lengend");
-            
+
+            Chart1.ChartAreas.Clear();
+            Chart1.ChartAreas.Add("ChartArea1");
+            Chart1.ChartAreas["ChartArea1"].AxisX.ScaleView.SizeType = DateTimeIntervalType.Hours;
+            Chart1.ChartAreas["ChartArea1"].AxisY.Maximum = 4.0;
             
             //GridView1.DataSource = table_graph;
             GridView1.DataSource = q;
             GridView1.DataBind();
         
+
+            //for(int h = 0; h < 23
+
         }
 
     }
