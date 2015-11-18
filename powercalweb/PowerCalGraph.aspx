@@ -61,7 +61,7 @@
         <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
             <ContentTemplate>
                 <br />
-                <asp:Button ID="ButtonShowTable" runat="server" OnClick="Button2_Click" Text="Show Data" />
+                <asp:Button ID="ButtonShowTable" runat="server" OnClick="ButtonShowTable_Click" Text="Show Data" />
                 <asp:GridView ID="GridView1" runat="server" Style="margin-top: 17px" Visible="False">
                 </asp:GridView>
             </ContentTemplate>
