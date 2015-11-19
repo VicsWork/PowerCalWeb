@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1 {
+namespace PowerCalibration {
     
     
     public partial class WebForm1 {
@@ -31,13 +31,13 @@ namespace WebApplication1 {
         protected global::System.Web.UI.ScriptManager ScriptManager1;
         
         /// <summary>
-        /// UpdatePanel2 control.
+        /// UpdatePanelGraph control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel UpdatePanel2;
+        protected global::System.Web.UI.UpdatePanel UpdatePanelGraph;
         
         /// <summary>
         /// CheckBoxListMachines control.
@@ -76,13 +76,58 @@ namespace WebApplication1 {
         protected global::System.Web.UI.WebControls.Button ButtonGo;
         
         /// <summary>
-        /// Chart1 control.
+        /// ButtonSubtractDay control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.DataVisualization.Charting.Chart Chart1;
+        protected global::System.Web.UI.WebControls.Button ButtonSubtractDay;
+        
+        /// <summary>
+        /// ButtonPreviousDay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonPreviousDay;
+        
+        /// <summary>
+        /// ButtonNextDay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonNextDay;
+        
+        /// <summary>
+        /// ButtonAddDay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button ButtonAddDay;
+        
+        /// <summary>
+        /// ChartCounts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.DataVisualization.Charting.Chart ChartCounts;
+        
+        /// <summary>
+        /// ChartGains control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.DataVisualization.Charting.Chart ChartGains;
         
         /// <summary>
         /// UpdatePanel1 control.
@@ -103,12 +148,21 @@ namespace WebApplication1 {
         protected global::System.Web.UI.WebControls.Button ButtonShowTable;
         
         /// <summary>
-        /// GridView1 control.
+        /// GridViewCounts control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridView1;
+        protected global::System.Web.UI.WebControls.GridView GridViewCounts;
+        
+        /// <summary>
+        /// GridViewGains control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView GridViewGains;
     }
 }

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PowerCalGraph.aspx.cs" Inherits="WebApplication1.WebForm1" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="PowerCalWeb.aspx.cs" Inherits="PowerCalibration.WebForm1" %>
 
 <%@ Register Assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" Namespace="System.Web.UI.DataVisualization.Charting" TagPrefix="asp" %>
 
@@ -6,7 +6,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title></title>
+    <title>Power Calibration Data</title>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -15,7 +15,7 @@
             <asp:ScriptManager ID="ScriptManager1" runat="server">
             </asp:ScriptManager>
 
-            <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
+            <asp:UpdatePanel ID="UpdatePanelGraph" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
                     <asp:CheckBoxList ID="CheckBoxListMachines" runat="server">
                         <asp:ListItem>Machine1</asp:ListItem>
@@ -24,8 +24,24 @@
                     <asp:TextBox ID="txtDateTimeStart" runat="server" Width="160px" TextMode="DateTime">2015-11-16 00:00:00</asp:TextBox> To 
                     <asp:TextBox ID="txtDateTimeEnd" runat="server" Width="160px" TextMode="DateTime">2015-11-17 00:00:00</asp:TextBox>
                     <asp:Button ID="ButtonGo" runat="server" OnClick="ButtonGo_Click" Text="Go" />
+                    <br />
+                    <asp:Button ID="ButtonSubtractDay" runat="server" OnClick="ButtonSubtractDay_Click" Text="&lt;&lt;" ToolTip="Zoom out" />
+                    <asp:Button ID="ButtonPreviousDay" runat="server" OnClick="ButtonPreviousDay_Click" Text="&lt;" ToolTip="Previous Day" />
+                    <asp:Button ID="ButtonNextDay" runat="server" OnClick="ButtonNextDay_Click" Text="&gt;" ToolTip="Next Day" />
+                    <asp:Button ID="ButtonAddDay" runat="server" OnClick="ButtonAddDay_Click" Text="&gt;&gt;" ToolTip="Zoom in" />
+                    <br />
+                    <asp:Chart ID="ChartCounts" runat="server" Height="600px" Width="1000px">
+                        <Series>
+                            <asp:Series Name="Series1">
+                            </asp:Series>
+                        </Series>
+                        <ChartAreas>
+                            <asp:ChartArea Name="ChartArea1">
+                            </asp:ChartArea>
+                        </ChartAreas>
+                    </asp:Chart>
                     <div>
-                    <asp:Chart ID="Chart1" runat="server" Height="560px" Width="982px">
+                    <asp:Chart ID="ChartGains" runat="server" Height="560px" Width="1000px">
                         <Series>
                             <asp:Series ChartType="Line" Legend="Legend1" Name="SeriesName" XValueType="Time" YValueType="Double">
                                 <Points>
@@ -62,8 +78,11 @@
             <ContentTemplate>
                 <br />
                 <asp:Button ID="ButtonShowTable" runat="server" OnClick="ButtonShowTable_Click" Text="Show Data" />
-                <asp:GridView ID="GridView1" runat="server" Style="margin-top: 17px" Visible="False">
+                <asp:GridView ID="GridViewCounts" runat="server" Style="margin-top: 17px" Visible="False">
                 </asp:GridView>
+                <asp:GridView ID="GridViewGains" runat="server" Style="margin-top: 17px" Visible="False">
+                </asp:GridView>
+                <br />
             </ContentTemplate>
             <Triggers>
                 <asp:AsyncPostBackTrigger ControlID="ButtonGo" EventName="Click" />

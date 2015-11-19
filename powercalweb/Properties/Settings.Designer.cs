@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebApplication1.Properties {
+namespace PowerCalibration.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -20,24 +20,6 @@ namespace WebApplication1.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2015-11-16")]
-        public global::System.DateTime date_start {
-            get {
-                return ((global::System.DateTime)(this["date_start"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("11/18/2015 10:04:00")]
-        public global::System.DateTime date_end {
-            get {
-                return ((global::System.DateTime)(this["date_end"]));
             }
         }
     }
