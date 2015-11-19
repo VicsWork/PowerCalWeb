@@ -10,7 +10,7 @@
 namespace PowerCalibration {
     
     
-    public partial class WebForm1 {
+    public partial class WebForm_PowerCalibration {
         
         /// <summary>
         /// form1 control.
