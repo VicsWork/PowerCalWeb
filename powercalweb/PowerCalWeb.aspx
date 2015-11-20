@@ -34,7 +34,7 @@
                     </asp:Timer>
                     <asp:Chart ID="ChartCounts" runat="server" Height="600px" Width="1000px">
                         <Series>
-                            <asp:Series Name="Series1">
+                            <asp:Series Name="Series1" ChartType="StackedColumn">
                             </asp:Series>
                         </Series>
                         <ChartAreas>

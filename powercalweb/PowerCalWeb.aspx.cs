@@ -39,7 +39,7 @@ namespace PowerCalibration
                 CheckBoxListMachines.DataBind();
                 foreach (ListItem item in CheckBoxListMachines.Items)
                 {
-                    if(item.Text != "A1040")
+                    if (item.Text != "A1040")
                         item.Selected = true;
                 }
 
@@ -106,14 +106,14 @@ namespace PowerCalibration
             //return;
 
             var query_graph = from r in table_results_db.AsEnumerable()
-                    join m in _table_machies_db.AsEnumerable() on r.Field<int>("machine_id") equals m.Field<int>("id")
-                    select new
-                    {
-                        timestamp = r.Field<DateTime>("timestamp"),
-                        voltage_gain = r.Field<Int32>("voltage_gain"),
-                        current_gain = r.Field<Int32>("current_gain"),
-                        machine = m.Field<string>("name")
-                    };
+                              join m in _table_machies_db.AsEnumerable() on r.Field<int>("machine_id") equals m.Field<int>("id")
+                              select new
+                              {
+                                  timestamp = r.Field<DateTime>("timestamp"),
+                                  voltage_gain = r.Field<Int32>("voltage_gain"),
+                                  current_gain = r.Field<Int32>("current_gain"),
+                                  machine = m.Field<string>("name")
+                              };
 
 
             DataTable table_graph = new DataTable();
@@ -176,35 +176,38 @@ namespace PowerCalibration
             DataTable table_counts = new DataTable();
             table_counts.Columns.Add("time", typeof(DateTime));
 
-            foreach(ListItem machine in CheckBoxListMachines.Items)
-                if(machine.Selected)
+            foreach (ListItem machine in CheckBoxListMachines.Items)
+                if (machine.Selected)
                     table_counts.Columns.Add(machine.Text, typeof(int));
 
             DateTime start = DateTime.Parse(this.txtDateTimeStart.Text);
             DateTime end = DateTime.Parse(this.txtDateTimeEnd.Text);
             int count_total = 0;
-            for (DateTime s = start.Date; s < end;)
+            for (DateTime s = start.Date; s < end; )
             {
                 DateTime e = s + new TimeSpan(1, 0, 0);
 
+                DataRow row_count = table_counts.NewRow();
+                row_count["time"] = s;
+
+                int total_count_for_time_slot = 0;
                 foreach (ListItem machine in CheckBoxListMachines.Items)
                 {
                     if (machine.Selected)
                     {
-                        string filter = string.Format("timestamp >= '{0} ' and timestamp < '{1}' and machine_id={2}", 
+                        string filter = string.Format("timestamp >= '{0} ' and timestamp < '{1}' and machine_id={2}",
                             s.ToString(), e.ToString(), machine.Value);
                         int count = (int)table_results_db.Compute("Count(id)", filter);
                         if (count > 0)
                         {
-                            DataRow row_count = table_counts.NewRow();
-                            row_count["time"] = s;
                             row_count[machine.Text] = count;
-                            table_counts.Rows.Add(row_count);
                             count_total += count;
+                            total_count_for_time_slot += count;
                         }
                     }
                 }
-
+                if (total_count_for_time_slot > 0)
+                    table_counts.Rows.Add(row_count);
                 s += new TimeSpan(1, 0, 0);
             }
             GridViewCounts.DataSource = table_counts;
@@ -219,7 +222,7 @@ namespace PowerCalibration
                     series_name = machine.Text;
                     ChartCounts.Series.Add(series_name);
                     ChartCounts.Series[series_name].Points.DataBind(table_counts.AsEnumerable(), "time", series_name, "");
-                    ChartCounts.Series[series_name].ChartType = SeriesChartType.Column;
+                    ChartCounts.Series[series_name].ChartType = SeriesChartType.StackedColumn;
                     ChartCounts.Series[series_name].YValuesPerPoint = 1;
                     ChartCounts.Series[series_name].YValueType = ChartValueType.Int32;
                     ChartCounts.Series[series_name].XValueType = ChartValueType.Time;
