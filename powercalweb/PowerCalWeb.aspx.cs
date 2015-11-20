@@ -48,7 +48,7 @@ namespace PowerCalibration
                 txtDateTimeStart.Text = start.ToString();
                 txtDateTimeEnd.Text = end.ToString();
 
-                updateGrpahBydate();
+                updateData();
             }
         }
 
@@ -70,10 +70,10 @@ namespace PowerCalibration
 
         protected void ButtonGo_Click(object sender, EventArgs e)
         {
-            updateGrpahBydate();
+            updateData();
         }
 
-        void updateGrpahBydate()
+        void updateData()
         {
             DataTable table_results_db = new DataTable();
             using (SqlConnection con = new SqlConnection(_db_connect_str.ConnectionString))
@@ -176,7 +176,10 @@ namespace PowerCalibration
             DataTable table_counts = new DataTable();
             table_counts.Columns.Add("time", typeof(DateTime));
 
-            table_counts.Columns.Add("count", typeof(int));
+            foreach(ListItem machine in CheckBoxListMachines.Items)
+                if(machine.Selected)
+                    table_counts.Columns.Add(machine.Text, typeof(int));
+
             DateTime start = DateTime.Parse(this.txtDateTimeStart.Text);
             DateTime end = DateTime.Parse(this.txtDateTimeEnd.Text);
             int count_total = 0;
@@ -184,17 +187,22 @@ namespace PowerCalibration
             {
                 DateTime e = s + new TimeSpan(1, 0, 0);
 
-
-                string filter = string.Format("timestamp >= '{0} ' and timestamp < '{1}'", s.ToString(), e.ToString());
-                int count = (int)table_results_db.Compute("Count(id)", filter);
-
-                if (count > 0)
+                foreach (ListItem machine in CheckBoxListMachines.Items)
                 {
-                    DataRow row_count = table_counts.NewRow();
-                    row_count["time"] = s;
-                    row_count["count"] = count;
-                    table_counts.Rows.Add(row_count);
-                    count_total += count;
+                    if (machine.Selected)
+                    {
+                        string filter = string.Format("timestamp >= '{0} ' and timestamp < '{1}' and machine_id={2}", 
+                            s.ToString(), e.ToString(), machine.Value);
+                        int count = (int)table_results_db.Compute("Count(id)", filter);
+                        if (count > 0)
+                        {
+                            DataRow row_count = table_counts.NewRow();
+                            row_count["time"] = s;
+                            row_count[machine.Text] = count;
+                            table_counts.Rows.Add(row_count);
+                            count_total += count;
+                        }
+                    }
                 }
 
                 s += new TimeSpan(1, 0, 0);
@@ -202,19 +210,24 @@ namespace PowerCalibration
             GridViewCounts.DataSource = table_counts;
             GridViewCounts.DataBind();
 
-            
-            series_name = "Count";
-            ChartCounts.Series.Add(series_name);
-            ChartCounts.Series[series_name].Points.DataBind(table_counts.AsEnumerable(), "time", series_name, "");
-            ChartCounts.Series[series_name].ChartType = SeriesChartType.Column;
+            ChartCounts.Series.Clear();
+            ChartCounts.Legends.Add("Legend");
+            foreach (ListItem machine in CheckBoxListMachines.Items)
+            {
+                if (machine.Selected)
+                {
+                    series_name = machine.Text;
+                    ChartCounts.Series.Add(series_name);
+                    ChartCounts.Series[series_name].Points.DataBind(table_counts.AsEnumerable(), "time", series_name, "");
+                    ChartCounts.Series[series_name].ChartType = SeriesChartType.Column;
+                    ChartCounts.Series[series_name].YValuesPerPoint = 1;
+                    ChartCounts.Series[series_name].YValueType = ChartValueType.Int32;
+                    ChartCounts.Series[series_name].XValueType = ChartValueType.Time;
+                    ChartCounts.Series[series_name].IsValueShownAsLabel = true;
+                }
+            }
 
-            ChartCounts.Series[series_name].XValueType = ChartValueType.Time;
-            ChartCounts.Series[series_name].YValuesPerPoint = 1;
-            ChartCounts.Series[series_name].YValueType = ChartValueType.Int32;
-            ChartCounts.Series[series_name].IsValueShownAsLabel = true;
-            ChartCounts.Series[series_name].IsVisibleInLegend = true;
-
-            ChartCounts.ToolTip = count_total.ToString();
+            ChartCounts.ToolTip = "Total = " + count_total.ToString();
 
         }
 
@@ -224,7 +237,7 @@ namespace PowerCalibration
             start = start.Date - new TimeSpan(1, 0, 0, 0);
             txtDateTimeStart.Text = start.ToString();
 
-            updateGrpahBydate();
+            updateData();
         }
 
         protected void ButtonAddDay_Click(object sender, EventArgs e)
@@ -233,7 +246,7 @@ namespace PowerCalibration
             start = start.Date + new TimeSpan(1, 0, 0, 0);
             txtDateTimeStart.Text = start.ToString();
 
-            updateGrpahBydate();
+            updateData();
 
         }
 
@@ -245,7 +258,7 @@ namespace PowerCalibration
             DateTime end = start + new TimeSpan(1, 0, 0, 0);
             txtDateTimeEnd.Text = end.ToString();
 
-            updateGrpahBydate();
+            updateData();
         }
 
         protected void ButtonNextDay_Click(object sender, EventArgs e)
@@ -256,8 +269,21 @@ namespace PowerCalibration
             DateTime end = start + new TimeSpan(1, 0, 0, 0);
             txtDateTimeEnd.Text = end.ToString();
 
-            updateGrpahBydate();
+            updateData();
 
+        }
+
+        protected void Timer1_Tick(object sender, EventArgs e)
+        {
+            DateTime end = DateTime.Now;
+            txtDateTimeEnd.Text = end.ToString();
+
+            updateData();
+        }
+
+        protected void CheckBoxListMachines_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            updateData();
         }
 
 

@@ -17,7 +17,7 @@
 
             <asp:UpdatePanel ID="UpdatePanelGraph" runat="server" UpdateMode="Conditional">
                 <ContentTemplate>
-                    <asp:CheckBoxList ID="CheckBoxListMachines" runat="server">
+                    <asp:CheckBoxList ID="CheckBoxListMachines" runat="server" AutoPostBack="True" OnSelectedIndexChanged="CheckBoxListMachines_SelectedIndexChanged" RepeatDirection="Horizontal">
                         <asp:ListItem>Machine1</asp:ListItem>
                         <asp:ListItem>Machne2</asp:ListItem>
                     </asp:CheckBoxList>
@@ -30,6 +30,8 @@
                     <asp:Button ID="ButtonNextDay" runat="server" OnClick="ButtonNextDay_Click" Text="&gt;" ToolTip="Next Day" />
                     <asp:Button ID="ButtonAddDay" runat="server" OnClick="ButtonAddDay_Click" Text="&gt;&gt;" ToolTip="Zoom in" />
                     <br />
+                    <asp:Timer ID="Timer1" runat="server" Interval="120000" OnTick="Timer1_Tick">
+                    </asp:Timer>
                     <asp:Chart ID="ChartCounts" runat="server" Height="600px" Width="1000px">
                         <Series>
                             <asp:Series Name="Series1">
