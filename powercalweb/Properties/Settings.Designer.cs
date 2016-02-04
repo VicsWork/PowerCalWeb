@@ -22,5 +22,27 @@ namespace PowerCalibration.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=zeus.centralite.com;Initial Catalog=ManufacturingStore_v2;Integrated " +
+            "Security=FALSE;User Id=mfgTester;Password=mfgTester")]
+        public string PowerCalibrationConnectionString {
+            get {
+                return ((string)(this["PowerCalibrationConnectionString"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=a1040.centralite.com;Initial Catalog=PowerCalibration;Integrated Secu" +
+            "rity=True")]
+        public string PowerCalibrationConnectionString2 {
+            get {
+                return ((string)(this["PowerCalibrationConnectionString2"]));
+            }
+        }
     }
 }

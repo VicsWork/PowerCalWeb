@@ -19,8 +19,7 @@ namespace PowerCalibration
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            _db_connect_str = new SqlConnectionStringBuilder(
-                "Data Source=a1040.centralite.com;Initial Catalog=PowerCalibration;Integrated Security=True");
+            _db_connect_str = new SqlConnectionStringBuilder(Properties.Settings.Default.PowerCalibrationConnectionString);
 
             if (!IsPostBack)
             {
@@ -28,18 +27,18 @@ namespace PowerCalibration
                 using (SqlConnection con = new SqlConnection(_db_connect_str.ConnectionString))
                 {
                     con.Open();
-                    SqlCommand cmd = new SqlCommand("select * from Machines", con);
+                    SqlCommand cmd = new SqlCommand("select * from TestStationMachines", con);
                     using (SqlDataAdapter adp = new SqlDataAdapter(cmd))
                         adp.Fill(_table_machies_db);
                 }
                 CheckBoxListMachines.Items.Clear();
-                CheckBoxListMachines.DataTextField = "name";
-                CheckBoxListMachines.DataValueField = "id";
+                CheckBoxListMachines.DataTextField = "Name";
+                CheckBoxListMachines.DataValueField = "Id";
                 CheckBoxListMachines.DataSource = _table_machies_db;
                 CheckBoxListMachines.DataBind();
                 foreach (ListItem item in CheckBoxListMachines.Items)
                 {
-                    if (item.Text != "A1040")
+                    if (item.Text != "A1040" && item.Text != "Unknown")
                         item.Selected = true;
                 }
 
@@ -83,18 +82,18 @@ namespace PowerCalibration
                 SqlCommand cmd;
 
                 string selectstr = string.Format(
-                    "select * from Results where timestamp >= '{0}' and timestamp < '{1}'", txtDateTimeStart.Text, txtDateTimeEnd.Text);
+                    "select * from CalibrationResults where DateCalibrated >= '{0}' and DateCalibrated < '{1}'", txtDateTimeStart.Text, txtDateTimeEnd.Text);
 
                 if (CheckBoxListMachines.SelectedIndex >= 0)
                 {
-                    selectstr += " and machine_id in (";
+                    selectstr += " and MachineId in (";
                     for (int i = 0; i < CheckBoxListMachines.Items.Count; i++)
                         if (CheckBoxListMachines.Items[i].Selected)
                             selectstr += CheckBoxListMachines.Items[i].Value + ',';
                     selectstr = selectstr.TrimEnd(new char[] { ',' });
                     selectstr += ")";
                 }
-                selectstr += " order by timestamp";
+                selectstr += " order by DateCalibrated";
 
                 cmd = new SqlCommand(selectstr, con);
                 using (SqlDataAdapter adp = new SqlDataAdapter(cmd))
@@ -106,43 +105,46 @@ namespace PowerCalibration
             //return;
 
             var query_graph = from r in table_results_db.AsEnumerable()
-                              join m in _table_machies_db.AsEnumerable() on r.Field<int>("machine_id") equals m.Field<int>("id")
+                              join m in _table_machies_db.AsEnumerable() on r.Field<int>("MachineId") equals m.Field<int>("id")
                               select new
                               {
-                                  timestamp = r.Field<DateTime>("timestamp"),
-                                  voltage_gain = r.Field<Int32>("voltage_gain"),
-                                  current_gain = r.Field<Int32>("current_gain"),
-                                  machine = m.Field<string>("name")
+                                  timestamp = r.Field<DateTime>("DateCalibrated"),
+                                  voltage_gain = r.Field<Int32>("VoltageGain"),
+                                  current_gain = r.Field<Int32>("CurrentGain"),
+                                  euiid = r.Field<Int32>("EuiId"),
+                                  machine = m.Field<string>("Name")
                               };
 
 
             DataTable table_graph = new DataTable();
-            table_graph.Columns.Add("timestamp", typeof(DateTime));
-            table_graph.Columns.Add("voltage_gain", typeof(double));
-            table_graph.Columns.Add("current_gain", typeof(double));
-            table_graph.Columns.Add("machine", typeof(string));
+            table_graph.Columns.Add("DateCalibrated", typeof(DateTime));
+            table_graph.Columns.Add("VoltageGain", typeof(double));
+            table_graph.Columns.Add("CurrentGain", typeof(double));
+            table_graph.Columns.Add("EuiId", typeof(int));
+            table_graph.Columns.Add("Machine", typeof(string));
             foreach (var r in query_graph)
             {
                 DataRow rowg = table_graph.NewRow();
 
-                rowg["timestamp"] = r.timestamp;
+                rowg["DateCalibrated"] = r.timestamp;
 
                 double voltage_gain = Convert.ToDouble(r.voltage_gain) / 0x400000;
                 double current_gain = Convert.ToDouble(r.current_gain) / 0x400000;
 
-                rowg["voltage_gain"] = voltage_gain;
-                rowg["current_gain"] = current_gain;
+                rowg["VoltageGain"] = voltage_gain;
+                rowg["CurrentGain"] = current_gain;
 
-                rowg["machine"] = r.machine;
+                rowg["EuiId"] = r.euiid;
+                rowg["Machine"] = r.machine;
 
                 table_graph.Rows.Add(rowg);
             }
 
             ChartGains.Series.Clear();
 
-            string series_name = "voltage_gain";
+            string series_name = "VoltageGain";
             ChartGains.Series.Add(series_name);
-            ChartGains.Series[series_name].Points.DataBind(table_graph.AsEnumerable(), "timestamp", series_name, "");
+            ChartGains.Series[series_name].Points.DataBind(table_graph.AsEnumerable(), "DateCalibrated", series_name, "");
             ChartGains.Series[series_name].ChartType = SeriesChartType.Point;
 
             ChartGains.Series[series_name].XValueType = ChartValueType.Time;
@@ -152,9 +154,9 @@ namespace PowerCalibration
             //Chart1.Legends[0].Enabled = true;
             //Chart1.Series[y_axis]["ShowMarkerLines"] = "true";
 
-            series_name = "current_gain";
+            series_name = "CurrentGain";
             ChartGains.Series.Add(series_name);
-            ChartGains.Series[series_name].Points.DataBind(table_graph.AsEnumerable(), "timestamp", series_name, "");
+            ChartGains.Series[series_name].Points.DataBind(table_graph.AsEnumerable(), "DateCalibrated", series_name, "");
             ChartGains.Series[series_name].ChartType = SeriesChartType.Point;
 
             ChartGains.Series[series_name].XValueType = ChartValueType.Time;
@@ -174,7 +176,7 @@ namespace PowerCalibration
             GridViewGains.DataBind();
 
             DataTable table_counts = new DataTable();
-            table_counts.Columns.Add("time", typeof(DateTime));
+            table_counts.Columns.Add("DateCalibrated", typeof(DateTime));
 
             foreach (ListItem machine in CheckBoxListMachines.Items)
                 if (machine.Selected)
@@ -188,14 +190,14 @@ namespace PowerCalibration
                 DateTime e = s + new TimeSpan(1, 0, 0);
 
                 DataRow row_count = table_counts.NewRow();
-                row_count["time"] = s;
+                row_count["DateCalibrated"] = s;
 
                 int total_count_for_time_slot = 0;
                 foreach (ListItem machine in CheckBoxListMachines.Items)
                 {
                     if (machine.Selected)
                     {
-                        string filter = string.Format("timestamp >= '{0} ' and timestamp < '{1}' and machine_id={2}",
+                        string filter = string.Format("DateCalibrated >= '{0} ' and DateCalibrated < '{1}' and MachineId={2}",
                             s.ToString(), e.ToString(), machine.Value);
                         int count = (int)table_results_db.Compute("Count(id)", filter);
                         if (count > 0)
@@ -210,18 +212,37 @@ namespace PowerCalibration
                     table_counts.Rows.Add(row_count);
                 s += new TimeSpan(1, 0, 0);
             }
+
+            table_counts.Columns.Add("Total");
+            foreach (DataRow r in table_counts.Rows)
+            {
+                int total = 0;
+                foreach (ListItem machine in CheckBoxListMachines.Items)
+                {
+                    if (machine.Selected)
+                    {
+                        var v = r[machine.Text];
+                        if (v != DBNull.Value)
+                            total += Convert.ToInt32(v);
+                    }
+                }
+                r["Total"] = total;
+            }
+
             GridViewCounts.DataSource = table_counts;
             GridViewCounts.DataBind();
 
             ChartCounts.Series.Clear();
             ChartCounts.Legends.Add("Legend");
+            ChartCounts.ChartAreas["ChartArea1"].AxisY.MinorGrid.Enabled = true;
+
             foreach (ListItem machine in CheckBoxListMachines.Items)
             {
                 if (machine.Selected)
                 {
                     series_name = machine.Text;
                     ChartCounts.Series.Add(series_name);
-                    ChartCounts.Series[series_name].Points.DataBind(table_counts.AsEnumerable(), "time", series_name, "");
+                    ChartCounts.Series[series_name].Points.DataBind(table_counts.AsEnumerable(), "DateCalibrated", series_name, "");
                     ChartCounts.Series[series_name].ChartType = SeriesChartType.StackedColumn;
                     ChartCounts.Series[series_name].YValuesPerPoint = 1;
                     ChartCounts.Series[series_name].YValueType = ChartValueType.Int32;
@@ -229,7 +250,7 @@ namespace PowerCalibration
                     ChartCounts.Series[series_name].IsValueShownAsLabel = true;
                 }
             }
-
+            
             ChartCounts.ToolTip = "Total = " + count_total.ToString();
 
         }
