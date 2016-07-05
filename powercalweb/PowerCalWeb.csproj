@@ -59,10 +59,18 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Find.aspx" />
     <Content Include="Web.config" />
     <Content Include="PowerCalWeb.aspx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Find.aspx.cs">
+      <DependentUpon>Find.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Find.aspx.designer.cs">
+      <DependentUpon>Find.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PowerCalWeb.aspx.cs">
       <DependentUpon>PowerCalWeb.aspx</DependentUpon>

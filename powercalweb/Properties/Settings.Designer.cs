@@ -26,7 +26,8 @@ namespace PowerCalibration.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=rs01;Initial Catalog=ManufacturingStore_v2;Integrated Security=True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=rs01;Initial Catalog=ManufacturingStore_v2;Trusted_Connection=Yes;per" +
+            "sist security info=False;")]
         public string PowerCalibrationConnectionString {
             get {
                 return ((string)(this["PowerCalibrationConnectionString"]));
